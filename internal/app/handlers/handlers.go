@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+var prefix string
+
 func MainHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Uncorrect method, only POST", http.StatusBadRequest)
@@ -20,11 +22,23 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	incomeUrl := string(responseData)
-	shortUrl := randomizer.Randomaizer(8)
-	storage.UrlList[shortUrl] = incomeUrl
+	incomeURL := string(responseData)
+	shortURL := randomizer.Randomaizer(8)
+	storage.UrlList[shortURL] = incomeURL
 	w.WriteHeader(http.StatusCreated)
-	_, errWrite := w.Write([]byte("http://" + r.Host + "/" + shortUrl))
+
+	UrlPrefix := prefix
+	if len(UrlPrefix) > 1 {
+		lastChar := string(UrlPrefix[len(UrlPrefix)-1])
+		if lastChar != "/" {
+			UrlPrefix += "/"
+		}
+	}
+	if UrlPrefix == "" {
+		UrlPrefix = "/"
+	}
+
+	_, errWrite := w.Write([]byte("http://" + r.Host + "/" + shortURL))
 	if errWrite != nil {
 		panic(errWrite)
 	}
