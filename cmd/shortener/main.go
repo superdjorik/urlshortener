@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-chi/chi/v5"
 	"github.com/superdjorik/urlshortener/internal/app/config"
 	"github.com/superdjorik/urlshortener/internal/app/handlers"
 	"net/http"
@@ -10,15 +9,10 @@ import (
 
 func main() {
 	appConfig := config.ParseFlags()
-	println(appConfig)
-	defaultRoute := "/"
-	fmt.Println("Runs on: " + appConfig.Host)
-	fmt.Println("Prefix: " + defaultRoute)
+	fmt.Println("Server runs on: " + appConfig.Host)
+	fmt.Println("Location: " + appConfig.Location)
 
-	r := chi.NewRouter()
-	r.Route(defaultRoute, func(r chi.Router) {
-		r.Post("/", handlers.MainHandler)
-		r.Get("/{id}", handlers.ShortHandler)
-	})
-	http.ListenAndServe(appConfig.Host, r)
+	mux := http.NewServeMux()
+	mux.HandleFunc(appConfig.Location, handlers.MainHandler)
+	http.ListenAndServe(appConfig.Host, mux)
 }

@@ -2,15 +2,30 @@ package handlers
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/superdjorik/urlshortener/internal/app/config"
 	"github.com/superdjorik/urlshortener/internal/app/randomizer"
 	"github.com/superdjorik/urlshortener/internal/app/storage"
 	"io"
 	"net/http"
 )
 
-var prefix string
-
 func MainHandler(w http.ResponseWriter, r *http.Request) {
+	appConfig := config.ParseFlags()
+	urlPrefix := appConfig.Location
+	if len(urlPrefix) > 1 {
+		lastChar := string(urlPrefix[len(urlPrefix)-1])
+		if lastChar != "/" {
+			urlPrefix += "/"
+		}
+	}
+	if urlPrefix == "" {
+		urlPrefix = "/"
+	}
+	switch r.Method {
+	case http.MethodPost:
+
+	}
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Uncorrect method, only POST", http.StatusBadRequest)
 		return
@@ -27,7 +42,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 	storage.UrlList[shortURL] = incomeURL
 	w.WriteHeader(http.StatusCreated)
 
-	UrlPrefix := prefix
+	UrlPrefix := appConfig.Location
 	if len(UrlPrefix) > 1 {
 		lastChar := string(UrlPrefix[len(UrlPrefix)-1])
 		if lastChar != "/" {
@@ -38,7 +53,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 		UrlPrefix = "/"
 	}
 
-	_, errWrite := w.Write([]byte("http://" + r.Host + "/" + shortURL))
+	_, errWrite := w.Write([]byte("http://" + r.Host + UrlPrefix + shortURL))
 	if errWrite != nil {
 		panic(errWrite)
 	}
