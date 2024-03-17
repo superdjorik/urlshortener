@@ -1,4 +1,4 @@
-cd ..
+# cd ..
 $ITERBRANCH = git rev-parse --abbrev-ref HEAD
 if ($ITERBRANCH -match '^iter([0-9]+)$' -eq 'True') {
 $ITERNUM = $ITERBRANCH -replace '^iter([0-9]+)$', '$1'
