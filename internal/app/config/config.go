@@ -5,29 +5,22 @@ import "flag"
 // Структура для конфигурации сервера
 // Host - адрес сервера
 // Prefix - базовый адрес результирующего сокращённого URL
-type AppConfig struct {
-	Host     string
-	Location string
+var options struct {
+	host     string
+	location string
 }
 
-// Парсер конфигурации сервиса
-func ParseFlags() *AppConfig {
-	appConfig := AppConfig{Host: "", Location: ""}
-	flag.Func("a", "Host:Port, default: localhost:8080", func(s string) error {
-		if s != "" {
-			appConfig.Host = s
-		} else {
-			appConfig.Host = "localhost:8080"
-		}
-		return nil
-	})
-	flag.Func("b", "Location, default: /", func(s string) error {
-		if s != "" {
-			appConfig.Location = "/" + s
-		}
-		return nil
-	})
-
+// Парсер конфига
+func ParseFlags() {
+	flag.StringVar(&options.host, "a", ":8080", "address and port to run server")
+	flag.StringVar(&options.location, "b", "http://localhost:8080/", "server address")
 	flag.Parse()
-	return &appConfig
+}
+
+func Host() string {
+	return options.host
+}
+
+func Location() string {
+	return options.location
 }

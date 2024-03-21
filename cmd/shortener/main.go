@@ -8,11 +8,12 @@ import (
 )
 
 func main() {
-	appConfig := config.ParseFlags()
-	fmt.Println("Server runs on: " + appConfig.Host)
-	fmt.Println("Location: " + appConfig.Location)
+	config.ParseFlags()
+	fmt.Println("Server runs on: " + config.Host())
+	fmt.Println("Location: " + config.Location())
 
 	mux := http.NewServeMux()
-	mux.HandleFunc(appConfig.Location, handlers.MainHandler)
-	http.ListenAndServe(appConfig.Host, mux)
+	mux.HandleFunc("POST /", handlers.StoreUrl)
+	mux.HandleFunc("GET /{id}", handlers.GetUrl)
+	http.ListenAndServe(config.Host(), mux)
 }
